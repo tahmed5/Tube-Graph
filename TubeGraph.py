@@ -19,12 +19,48 @@ def connections_data():
         station1 = int(items[0])
         station2 = int(items[1])
         if station1 not in connections.keys():
-            connections[station1] = [station2]
+            connections[station1] = []
         if station2 not in connections.keys():
-            connections[station2] = [station1]
-        else:
-            connections[station1].append(station2)
-            connections[station2].append(station1)
+            connections[station2] = []
+        connections[station1].append(station2)
+        connections[station2].append(station1)
+    
+def free_roam():
+    print('Which station would you like to start from ')
+    print('If you want to quit enter "Q"')
+    print('============================================')
+    start_station_check = True
+    
+    while start_station_check == True:
+        start_station = input()
+        start_station = start_station.lower()
+        if start_station == 'q':
+            quit()
+        for key in stations:
+            if start_station == stations[key].lower():
+                start_station_key = key
+                start_station_check = False
+        if start_station_check == True:
+            print('Station Not Found - Enter Start Station Again')
+
+    roaming = True
+    current_station = start_station_key
+    while roaming == True:
+        print('You are at:', stations[current_station])
+        print('Do you want to go to:')
+        for x in range(len(connections[current_station])):
+            print(x + 1, stations[connections[current_station][x]])
+            
+        user_station = int(input('Enter The Number Of The Station You Wish To Visit\n'))
+        user_station -= 1
+        if 0 <= user_station <= len(connections[current_station]) - 1:
+            current_station = connections[current_station][user_station]
+        
+        
+            
+        
+
+        
     
     
                                    
