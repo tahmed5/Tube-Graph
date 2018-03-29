@@ -2,7 +2,7 @@ import random
 
 def station_data():
     global stations
-    stations = {}
+    stations = {} #holds station key with station name 
     file = open('stations.csv', 'r')
     lines = file.read().splitlines()
     for line in lines:
@@ -11,19 +11,58 @@ def station_data():
 
 def connections_data():
     global connections
-    connections = {}
+    global connected_lines
+    connections = {} #holds station 1 key and station 2 key
+    connected_lines = {} #holds concatenated key of both stations and lines
+    
     file = open('connections.csv','r')
     lines = file.read().splitlines()
     for line in lines:
         items = line.split(',')
+        both_stations = items[0] + items[1]
+        if both_stations not in connected_lines.keys():
+             connected_lines[both_stations] = []
+
+        connected_lines[both_stations].append(items[2])
+        
         station1 = int(items[0])
         station2 = int(items[1])
+        
         if station1 not in connections.keys():
             connections[station1] = []
         if station2 not in connections.keys():
             connections[station2] = []
+            
         connections[station1].append(station2)
         connections[station2].append(station1)
+
+def lines_data():
+    global tube_lines
+    tube_lines = {} # holds Line Key and Line Name
+    
+    file = open('lines.csv','r')
+    lines = file.read().splitlines()
+    
+    for line in lines:
+        items = line.split(',')
+        tube_lines[int(items[0])] = items[1]
+
+
+def station_lines(current, neighbour):
+    temp_station = {}
+    current,neighbour = str(current), str(neighbour)
+    connectedkey = current + neighbour
+    
+    if connected_lines.get(connectedkey) == None:
+        connectedkey = neighbour + current
+
+    for line in connected_lines[connectedkey]:
+        temp_station[connectedkey] = line
+
+    print(temp_station)
+    
+    print(current,neighbour)
+
     
 def free_roam():
     print('Which station would you like to start from ')
@@ -43,13 +82,16 @@ def free_roam():
         if start_station_check == True:
             print('Station Not Found - Enter Start Station Again')
 
+    
+
     roaming = True
     current_station = start_station_key
+    station_hold = start_station_key
     while roaming == True:
         print('You are at:', stations[current_station])
         print('Do you want to go to:')
         for x in range(len(connections[current_station])):
-            print(x + 1, stations[connections[current_station][x]])
+            print(x + 1, stations[connections[current_station][x]], 'via' , station_lines(current_station, connections[current_station][x]) )
             
         user_station = int(input('Enter The Number Of The Station You Wish To Visit\n'))
         user_station -= 1
@@ -58,20 +100,11 @@ def free_roam():
         
         
             
-        
-
-        
     
-    
-                                   
-    
-        
-            
-            
-
 def main():
     station_data()
     connections_data()
+    lines_data()
     free_roam()
 
 main()
