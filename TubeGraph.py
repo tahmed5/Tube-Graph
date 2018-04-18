@@ -1,4 +1,5 @@
 import random
+import pprint
 #1: [52, 73, 73, 234, 265]
 def station_data():
     global stations
@@ -79,6 +80,22 @@ def lines_data():
         tube_lines[int(items[0])] = items[1]
 
 
+def dfs():
+    station_check = True
+    
+    while station_check == True:
+        start_station = input('Enter Your Start Station')
+        end_station = input('Enter Your End Station')
+        start_station = start_station.lower()
+        if start_station == 'q':
+            quit()
+        for key in stations:
+            if start_station == stations[key].lower():
+                start_station_key = key
+                start_station_check = False
+        if start_station_check == True:
+            print('Station Not Found - Enter Start Station Again')
+    
 
 def station_lines(current, neighbour):
     current,neighbour = str(current), str(neighbour)
@@ -104,7 +121,7 @@ def station_lines(current, neighbour):
 
     
 def free_roam():
-    print(text_connections)
+    pprint.pprint(text_connections)
     print('Which station would you like to start from ')
     print('If you want to quit enter "Q"')
     print('============================================')
@@ -148,6 +165,19 @@ def main():
     station_data()
     connections_data()
     lines_data()
-    free_roam()
+    print('Do you wish to:')
+    print('1: Free Roam')
+    print('2: DFS')
+    print('3: BFS')
+    choice = int(input())
+    if choice == 1:
+        free_roam()
+    elif choice == 2:
+        pass
+    elif choice == 3:
+        dfs()
+
+
+
 
 main()
