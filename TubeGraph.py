@@ -1,5 +1,8 @@
 import random
+import queue
 import pprint
+import time 
+
 #1: [52, 73, 73, 234, 265]
 def station_data():
     global stations
@@ -80,22 +83,68 @@ def lines_data():
         tube_lines[int(items[0])] = items[1]
 
 
-def dfs():
+def bfs():
     station_check = True
+    start_complete = False
+    end_complete = False
     
     while station_check == True:
-        start_station = input('Enter Your Start Station')
-        end_station = input('Enter Your End Station')
+        start_station = input('Enter Your Start Station\n')
+        end_station = input('Enter Your End Station\n')
         start_station = start_station.lower()
+        end_station = end_station.lower()
+        
         if start_station == 'q':
             quit()
         for key in stations:
             if start_station == stations[key].lower():
                 start_station_key = key
-                start_station_check = False
-        if start_station_check == True:
-            print('Station Not Found - Enter Start Station Again')
+                start_complete = True
+
+            if end_station == stations[key].lower():
+                target = key
+                end_complete = True       
+                
+        if (start_complete == True) and (end_complete == True):
+            break
+        
+        if station_check == True:
+            print('Station(s) Not Found - Enter Start Station Again')
+            
+    visited = []
+    t_visited = []
+    queue = []
+    t_queue = []
+    queue.append(start_station_key)
     
+    target_reached = False
+
+    while target_reached != True:
+        print(t_queue)
+        search_station = queue.pop(0)
+
+        visited.append(search_station)
+        t_visited.append(stations[search_station])
+        
+        time.sleep(0)
+
+        if search_station == target:
+            print(stations[target] , 'has been reached')
+            target_reached = True
+            break
+
+        for value in connections[search_station]:
+            if value not in visited and value not in queue:
+                queue.append(value)
+                try:
+                    t_queue.append(stations[value])
+                except:
+                    print(value)
+                    print(search_station)
+                    time.sleep(10)
+        
+        
+             
 
 def station_lines(current, neighbour):
     current,neighbour = str(current), str(neighbour)
@@ -122,6 +171,7 @@ def station_lines(current, neighbour):
     
 def free_roam():
     pprint.pprint(text_connections)
+    pprint.pprint(connections)
     print('Which station would you like to start from ')
     print('If you want to quit enter "Q"')
     print('============================================')
@@ -175,7 +225,7 @@ def main():
     elif choice == 2:
         pass
     elif choice == 3:
-        dfs()
+        bfs()
 
 
 
