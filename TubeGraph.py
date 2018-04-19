@@ -142,6 +142,64 @@ def bfs():
                     print(value)
                     print(search_station)
                     time.sleep(10)
+
+def dfs():
+    station_check = True
+    start_complete = False
+    end_complete = False
+    
+    while station_check == True:
+        start_station = input('Enter Your Start Station\n')
+        end_station = input('Enter Your End Station\n')
+        start_station = start_station.lower()
+        end_station = end_station.lower()
+        
+        if start_station == 'q':
+            quit()
+        for key in stations:
+            if start_station == stations[key].lower():
+                start_station_key = key
+                start_complete = True
+
+            if end_station == stations[key].lower():
+                target = key
+                end_complete = True       
+                
+        if (start_complete == True) and (end_complete == True):
+            break
+        
+        if station_check == True:
+            print('Station(s) Not Found - Enter Start Station Again')
+            
+    visited = []
+    t_visited = []
+    queue = []
+    t_queue = []
+    queue.append(start_station_key)
+    
+    target_reached = False
+
+    while target_reached != True:
+        print(t_queue)
+        search_station = queue.pop(-1)
+
+        visited.append(search_station)
+        t_visited.append(stations[search_station])
+        
+        time.sleep(0)
+
+        if search_station == target:
+            print(stations[target] , 'has been reached')
+            target_reached = True
+            break
+
+        for value in connections[search_station]:
+            if value not in visited and value not in queue:
+                queue.append(value)
+                try:
+                    t_queue.append(stations[value])
+                except:
+                    time.sleep(10)
         
         
              
@@ -223,7 +281,7 @@ def main():
     if choice == 1:
         free_roam()
     elif choice == 2:
-        pass
+        dfs()
     elif choice == 3:
         bfs()
 
