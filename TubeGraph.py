@@ -115,19 +115,16 @@ def bfs():
     t_visited = []
     queue = []
     t_queue = []
+    bfs_levels = {}
     queue.append(start_station_key)
-    
     target_reached = False
 
     while target_reached != True:
-        print(t_queue)
         search_station = queue.pop(0)
 
         visited.append(search_station)
         t_visited.append(stations[search_station])
         
-        time.sleep(0)
-
         if search_station == target:
             print(stations[target] , 'has been reached')
             target_reached = True
@@ -139,10 +136,8 @@ def bfs():
                 try:
                     t_queue.append(stations[value])
                 except:
-                    print(value)
-                    print(search_station)
-                    time.sleep(10)
-
+                    pass
+                
 def dfs():
     station_check = True
     start_complete = False
@@ -180,7 +175,6 @@ def dfs():
     target_reached = False
 
     while target_reached != True:
-        print(t_queue)
         search_station = queue.pop(-1)
 
         visited.append(search_station)
@@ -199,7 +193,7 @@ def dfs():
                 try:
                     t_queue.append(stations[value])
                 except:
-                    time.sleep(10)
+                    pass
         
         
              
@@ -229,7 +223,6 @@ def station_lines(current, neighbour):
     
 def free_roam():
     pprint.pprint(text_connections)
-    pprint.pprint(connections)
     print('Which station would you like to start from ')
     print('If you want to quit enter "Q"')
     print('============================================')
