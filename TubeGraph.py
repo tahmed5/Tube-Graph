@@ -18,6 +18,8 @@ def connections_data():
     global connections
     global connected_lines
     global text_connections
+    global cost
+    cost = {} #holds concatenated key of both stations and the cost between those stations
     connections = {} #holds station 1 key and station 2 key
     connected_lines = {} #holds concatenated key of both stations and lines
 
@@ -29,6 +31,7 @@ def connections_data():
         items = line.split(',')
         both_stations = items[0] + items[1]
         flipped_both_stations = items[1] + items[0]
+        time = int(items[3])
 
         if (both_stations not in connected_lines.keys()) and (flipped_both_stations not in connected_lines.keys() ):
             connected_lines[both_stations] = []
@@ -39,6 +42,15 @@ def connections_data():
         if flipped_both_stations in connected_lines.keys():
             connected_lines[flipped_both_stations].append(items[2])
 
+        if (both_stations not in cost.keys()) and (flipped_both_stations not in cost.keys() ):
+            cost[both_stations] = []
+            
+        if both_stations in cost.keys():
+            cost[both_stations].append(items[3])
+
+        if flipped_both_stations in cost.keys():
+            cost[flipped_both_stations].append(items[3])
+
             
         
         station1 = int(items[0])
@@ -47,7 +59,7 @@ def connections_data():
         text_station1 = stations.get(station1)
         text_station2 = stations.get(station2)
 
-        ########
+        #### ONLY USED FOR TEXT GRAPH CREATION ####
 
         if text_station1 not in text_connections.keys():
             text_connections[text_station1] = []
@@ -59,7 +71,7 @@ def connections_data():
         text_connections[text_station1].append(text_station2)           
 
 
-        #######
+        #### ONLY USED FOR TEXT GRAPH CREATION ####
         
         if station1 not in connections.keys():
             connections[station1] = []
@@ -68,7 +80,6 @@ def connections_data():
 
         connections[station2].append(station1)
         connections[station1].append(station2)
-
 
 
 def lines_data():
@@ -115,11 +126,17 @@ def bfs():
     t_visited = []
     queue = []
     t_queue = []
+
+    degree = 0
     bfs_levels = {}
+    bfs_levels[degree] = [start_station_key]
+    
     queue.append(start_station_key)
     target_reached = False
 
     while target_reached != True:
+        degree += 1
+        bfs_levels[degree] = []
         search_station = queue.pop(0)
 
         visited.append(search_station)
@@ -128,15 +145,19 @@ def bfs():
         if search_station == target:
             print(stations[target] , 'has been reached')
             target_reached = True
+            bfs_levels[degree].append(target)
             break
 
         for value in connections[search_station]:
             if value not in visited and value not in queue:
                 queue.append(value)
+                bfs_levels[degree].append(value)
                 try:
                     t_queue.append(stations[value])
                 except:
                     pass
+
+    shortest_path(bfs_levels,start_station_key, target)
                 
 def dfs():
     station_check = True
@@ -196,8 +217,56 @@ def dfs():
                     pass
         
         
-             
 
+def shortest_path(levels, start, end):
+    print(levels)
+    i = sorted(levels.keys())[-1]
+    n = 0 
+    path = []
+    path.append(end)
+    
+    while i!= 0:
+        i = i - 1
+        
+        if len(levels[i]) == 0:
+            i = i - 1
+            continue
+
+        currentCost = None
+        currentStation = None 
+        for station in levels[i]:   
+            bothStations = str(path[n]) + str(station)
+            print(n,i)
+            print(stations[path[n]], stations[station])
+            
+            try:
+                cost[bothStations]
+            except:
+                bothStations = str(station) + str(path[n])
+
+            try:
+                cost[bothStations]
+            except:
+                continue
+
+
+            if currentCost == None:
+                currentCost = cost[bothStations]
+                currentStation = station
+
+
+            if cost[bothStations] < currentCost:
+                currentStation = station
+                currentCost = cost[bothStations]
+                
+        if currentStation != None and currentStation not in path:
+            n += 1 
+            path.append(currentStation)
+            
+        
+    for station in path:
+        print(stations[station])
+    
 def station_lines(current, neighbour):
     current,neighbour = str(current), str(neighbour)
     connectedkey = current + neighbour
