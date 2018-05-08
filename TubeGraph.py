@@ -1,7 +1,8 @@
 import random
 import queue
 import pprint
-import time 
+import math
+from time import * 
 
 #1: [52, 73, 73, 234, 265]
 def station_data():
@@ -19,8 +20,10 @@ def connections_data():
     global connected_lines
     global text_connections
     global cost
+    global graph
     cost = {} #holds concatenated key of both stations and the cost between those stations
     connections = {} #holds station 1 key and station 2 key
+    graph = {}
     connected_lines = {} #holds concatenated key of both stations and lines
 
     text_connections = {}
@@ -46,10 +49,10 @@ def connections_data():
             cost[both_stations] = []
             
         if both_stations in cost.keys():
-            cost[both_stations].append(items[3])
+            cost[both_stations].append(int(items[3]))
 
         if flipped_both_stations in cost.keys():
-            cost[flipped_both_stations].append(items[3])
+            cost[flipped_both_stations].append(int(items[3]))
 
             
         
@@ -82,6 +85,96 @@ def connections_data():
         connections[station1].append(station2)
 
 
+    for station in stations:
+        graph[station] = {}
+        
+
+    for node in graph:
+        for connection in connections[node]:
+            bothStations = str(node) + str(connection)
+            try:
+                cost[bothStations]
+            except:
+                bothStations = str(connection) + str(node)
+            if connection not in graph[node]:
+                graph[node][connection] = min(cost[bothStations])
+
+
+        
+
+
+def dijkstras():
+    station_check = True
+    start_complete = False
+    end_complete = False
+    
+    while station_check == True:
+        start_station = input('Enter Your Start Station\n')
+        end_station = input('Enter Your End Station\n')
+        start_station = start_station.lower()
+        end_station = end_station.lower()
+        
+        if start_station == 'q':
+            quit()
+        for key in stations:
+            if start_station == stations[key].lower():
+                start = key
+                start_complete = True
+
+            if end_station == stations[key].lower():
+                end = key
+                end_complete = True       
+                
+        if (start_complete == True) and (end_complete == True):
+            break
+        
+        if station_check == True:
+            print('Station(s) Not Found - Enter Start Station Again')
+
+    cost = {}
+    parent = {}
+    NotVisited = graph
+    
+    infinity = math.inf
+
+    for node in graph:
+        cost[node] = infinity
+    cost[start] = 0
+
+    while NotVisited:
+        
+        minNode = None
+        for node in NotVisited:
+            if minNode == None:
+                minNode = node
+            elif cost[node] < cost[minNode]:
+                minNode = node
+
+        for child, weight in graph[minNode].items():
+            if weight + cost[minNode] < cost[child]:
+                cost[child] = weight + cost[minNode]
+                parent[child] = minNode
+                
+        NotVisited.pop(minNode)
+
+    currentNode = end
+    path = []
+    while currentNode != start:
+        try:
+            path.append(parent[currentNode])
+            currentNode = parent[currentNode]
+        except:
+            print('Not Possible To Go That Way')
+
+    finalPath = []
+    for value in reversed(path):
+        finalPath.append(stations[value])
+
+    finalPath.append(stations[end])
+
+
+    print('The Path from', stations[start], 'to', stations[end], 'is' , finalPath)
+    
 def lines_data():
     global tube_lines
     tube_lines = {} # holds Line Key and Line Name
@@ -201,7 +294,6 @@ def dfs():
         visited.append(search_station)
         t_visited.append(stations[search_station])
         
-        time.sleep(0)
 
         if search_station == target:
             print(stations[target] , 'has been reached')
@@ -339,6 +431,7 @@ def main():
     print('1: Free Roam')
     print('2: DFS')
     print('3: BFS')
+    print('4: Dijkstras')
     choice = int(input())
     if choice == 1:
         free_roam()
@@ -346,6 +439,8 @@ def main():
         dfs()
     elif choice == 3:
         bfs()
+    elif choice == 4:
+        dijkstras()
 
 
 
